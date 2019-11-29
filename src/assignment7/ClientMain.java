@@ -18,6 +18,7 @@ public class ClientMain extends Application
 	BufferedReader reader;
 	TextArea chat_Feed = new TextArea();
 	TextArea incoming;
+	String name = "";
 
 	
 	
@@ -48,8 +49,13 @@ public class ClientMain extends Application
 		
 		
 		//	PANES
-		Pane connect_Pane = new HBox(5);
-		connect_Pane.setPadding(new Insets(5));
+		Pane connect_Pane1 = new HBox(5);
+		connect_Pane1.setPadding(new Insets(5));
+		Pane connect_Pane2 = new HBox(5);
+		connect_Pane2.setPadding(new Insets(5));
+		GridPane connect_Grid = new GridPane();
+		connect_Grid.add(connect_Pane1,0,0);
+		connect_Grid.add(connect_Pane2,0,1);
 		
 		GridPane chat_Pane = new GridPane();
 		chat_Pane.setPadding(new Insets(5));
@@ -58,6 +64,9 @@ public class ClientMain extends Application
 		
 		
 		//	COMPONENTS OF connect_Pane
+		Label username = new Label("Chat Username:");
+		TextField username_Entry = new TextField();
+		username_Entry.setPromptText("Enter chat Username");
 		Label connect_Label = new Label("Connect to:");
 		TextField connect_IPaddress = new TextField();
 		connect_IPaddress.setPromptText("Enter IP address to connect to");
@@ -69,6 +78,7 @@ public class ClientMain extends Application
 			{
 				String ip = connect_IPaddress.getText();
 				if(ip == "") {ip = "127.0.0.8";}
+				name = username_Entry.getText();
 				try
 				{
 					connect(ip);
@@ -78,7 +88,9 @@ public class ClientMain extends Application
 				catch(Exception excep) {connect_IPaddress.setText(excep.getMessage());}
 			}
 		});
-		connect_Pane.getChildren().addAll(connect_Label,connect_IPaddress,connect_OK);
+		connect_Pane1.getChildren().addAll(username,username_Entry);
+		connect_Pane2.getChildren().addAll(connect_Label,connect_IPaddress,connect_OK);
+
 		
 		
 		//	COMPONENTS OF chat_Pane
@@ -94,7 +106,7 @@ public class ClientMain extends Application
 		send.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				writer.println(outgoing.getText());
+				writer.println(name + ": " + outgoing.getText());
 				writer.flush();
 				outgoing.setText("");;
 				outgoing.requestFocus();
@@ -109,7 +121,7 @@ public class ClientMain extends Application
 		
 		
 		//	ADDING COMPONENTS TO STAGE
-		connect_Stage.setScene(new Scene(connect_Pane));
+		connect_Stage.setScene(new Scene(connect_Grid));
 		connect_Stage.show();
 		chat_Stage.setScene((new Scene(chat_Pane)));
 	}
