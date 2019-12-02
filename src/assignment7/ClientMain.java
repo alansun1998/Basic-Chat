@@ -3,6 +3,7 @@ package assignment7;
 import java.io.*;
 import java.net.Socket;
 
+import com.sun.security.ntlm.Server;
 import javafx.application.Application;
 import javafx.event.*;
 import javafx.geometry.Insets;
@@ -18,11 +19,12 @@ public class ClientMain extends Application
 	BufferedReader reader;
 	TextArea chat_Feed = new TextArea();
 	TextArea incoming;
-	String name = "";
+	static Profile currentUser;
+	static String ip;
 
 	
 	
-	
+
 	/**
 	 * Method for initializing connection to server
 	 * @throws IOException
@@ -45,10 +47,8 @@ public class ClientMain extends Application
 	public void start(Stage chat_Stage) throws Exception
 	{
 		Stage connect_Stage = new Stage();
-		//Stage chat_Stage = new Stage();
-		
-		
-		//	PANES
+
+		//	COMPONENTS OF STARTUP
 		Pane connect_Pane1 = new HBox(5);
 		connect_Pane1.setPadding(new Insets(5));
 		Pane connect_Pane2 = new HBox(5);
@@ -56,12 +56,6 @@ public class ClientMain extends Application
 		GridPane connect_Grid = new GridPane();
 		connect_Grid.add(connect_Pane1,0,0);
 		connect_Grid.add(connect_Pane2,0,1);
-		
-		GridPane chat_Pane = new GridPane();
-		chat_Pane.setPadding(new Insets(5));
-		
-		
-		
 		
 		//	COMPONENTS OF connect_Pane
 		Label username = new Label("Chat Username:");
@@ -76,14 +70,18 @@ public class ClientMain extends Application
 			@Override
 			public void handle(ActionEvent e)
 			{
-				String ip = connect_IPaddress.getText();
+				ip = connect_IPaddress.getText();
 				if(ip == "") {ip = "127.0.0.8";}
-				name = username_Entry.getText();
 				try
 				{
 					connect(ip);
+					currentUser = new Profile(username_Entry.getText(),mysock);
+					Profile x = new Profile("testing",mysock);
+					currentUser.addFriend(x);
+					//currentUser.addFriend((new Profile("tesing2")));
 					connect_Stage.close();
-					chat_Stage.show();
+					new ChatRoom();
+					//chat_Stage.show();
 				}
 				catch(Exception excep) {connect_IPaddress.setText(excep.getMessage());}
 			}
@@ -91,41 +89,19 @@ public class ClientMain extends Application
 		connect_Pane1.getChildren().addAll(username,username_Entry);
 		connect_Pane2.getChildren().addAll(connect_Label,connect_IPaddress,connect_OK);
 
-		
-		
-		//	COMPONENTS OF chat_Pane
 		incoming = new TextArea();
 		incoming.setWrapText(true);
 		incoming.setEditable(false);
-		ScrollPane hist = new ScrollPane(incoming);
 
-		TextArea outgoing = new TextArea();
-		outgoing.setWrapText(true);
-
-		Button send = new Button("Send");
-		send.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				writer.println(name + ": " + outgoing.getText());
-				writer.flush();
-				outgoing.setText("");;
-				outgoing.requestFocus();
-
-			}
-		});
-
-		chat_Feed.setPrefColumnCount(2);
-		chat_Pane.add(hist, 0, 0);
-		chat_Pane.add(outgoing,0,1);
-		chat_Pane.add(send,1,1);
-		
-		
 		//	ADDING COMPONENTS TO STAGE
 		connect_Stage.setScene(new Scene(connect_Grid));
 		connect_Stage.show();
-		chat_Stage.setScene((new Scene(chat_Pane)));
 	}
-	
+
+	public static Profile getCurrentUser(){
+		return currentUser;
+	}
+
 	public static void main(String[] args)
 	{
 		launch(args);

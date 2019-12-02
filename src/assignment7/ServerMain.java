@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 public class ServerMain extends Observable
 {
 	private ArrayList<PrintWriter> clientOutputStreams;
+	public static ArrayList<Profile> users = new ArrayList<Profile>();
+
 
 	public static void main(String[] args) {
 		try {
@@ -46,6 +48,23 @@ public class ServerMain extends Observable
 		}
 	}
 
+	public static ArrayList<Profile> getUsers(){
+	    return users;
+    }
+
+    public static void addUsers(Profile curr){
+	    users.add(curr);
+    }
+
+    public static Profile findUser(String name){
+		for(Profile x: users){
+			if(x.username.equals(name)){
+				return x;
+			}
+		}
+		return null;
+	}
+
 	class ClientHandler implements Runnable {
 		private BufferedReader reader;
 
@@ -59,6 +78,7 @@ public class ServerMain extends Observable
 			try {
 				while ((message = reader.readLine()) != null) {
 					System.out.println("read " + message);
+					setChanged();
 					notifyClients(message);
 				}
 			} catch (IOException e) {
