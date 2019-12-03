@@ -18,8 +18,8 @@ public class ClientMain extends Application
 	PrintWriter writer;			//	our printwriter
 	BufferedReader reader;		//	our bufferedreader
 	TextArea incoming;			//	common textarea for incoming text
-	Label connectstatus = new Label();
-	static Profile currentUser;	//	our user profile
+	Label connectstatus = new Label("...");
+//	static Profile currentUser;	//	our user profile
 	static String ip;			//	our ip address
 
 	
@@ -39,7 +39,6 @@ public class ClientMain extends Application
 		connectstatus.setText("Connecting...");
 		while(!(mysock.isConnected())) {continue;}
 		connectstatus.setText("Connected!");
-		writer.write(currentUser.username+"\n");
 	}
 
 	
@@ -53,19 +52,15 @@ public class ClientMain extends Application
 		Stage connect_Stage = new Stage();
 
 		//	COMPONENTS OF STARTUP
-		Pane connect_Pane1 = new HBox(5);
-		connect_Pane1.setPadding(new Insets(5));
+		
 		Pane connect_Pane2 = new HBox(5);
 		connect_Pane2.setPadding(new Insets(5));
 		GridPane connect_Grid = new GridPane();
-		connect_Grid.add(connect_Pane1,0,0);
+//		connect_Grid.add(connect_Pane1,0,0);
 		connect_Grid.add(connect_Pane2,0,1);
 		connect_Grid.add(connectstatus,0,2);
 		
 		//	COMPONENTS OF connect_Pane
-		Label username = new Label("Chat Username:");
-		TextField username_Entry = new TextField();
-		username_Entry.setPromptText("Enter chat Username");
 		Label connect_Label = new Label("Connect to:");
 		TextField connect_IPaddress = new TextField();
 		connect_IPaddress.setPromptText("Enter IP address to connect to");
@@ -82,14 +77,13 @@ public class ClientMain extends Application
 				{
 					connectstatus.setText("Searching...");
 					connect(ip);
-					currentUser = new Profile(username_Entry.getText(),mysock);
+					new ChatRoom(new Profile("NO_NAME",mysock));
 					connect_Stage.close();
-					new ChatRoom();
 				}
-				catch(Exception excep) {connectstatus.setText(excep.getMessage());}
+				catch(Exception excep) {connectstatus.setText(excep.getMessage());
+				}
 			}
 		});
-		connect_Pane1.getChildren().addAll(username,username_Entry);
 		connect_Pane2.getChildren().addAll(connect_Label,connect_IPaddress,connect_OK);
 
 		incoming = new TextArea();
@@ -101,9 +95,9 @@ public class ClientMain extends Application
 		connect_Stage.show();
 	}
 
-	public static Profile getCurrentUser(){
-		return currentUser;
-	}
+//	public static Profile getCurrentUser(){
+//		return currentUser;
+//	}
 
 	public static void main(String[] args)
 	{
