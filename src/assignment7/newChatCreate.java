@@ -31,8 +31,8 @@ public class newChatCreate extends Stage {
         	filler.setDisable(true);
         	chooseChat.add(filler);
         }
-        if(currentUser.friends.size() == 0)
-            friendList.getItems().add("You have no friends :(");
+//        if(currentUser.friends.size() == 0)
+//            friendList.getItems().add("You have no friends :(");
 
         Button add = new Button("Add");
         add.setOnAction(new EventHandler<ActionEvent>() {

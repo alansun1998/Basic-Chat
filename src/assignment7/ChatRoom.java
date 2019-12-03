@@ -3,6 +3,7 @@ package assignment7;
 import javafx.beans.value.ObservableValueBase;
 import javafx.event.*;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -28,6 +29,8 @@ public class ChatRoom extends Stage implements Observer {
         global = isGlobal;
         GridPane chat_Pane = new GridPane();
         chat_Pane.setPadding(new Insets(5));
+        GridPane menu = new GridPane();
+        menu.setPadding(new Insets(5));
         try{
             connect(ClientMain.ip);
         }catch(Exception excep) {}
@@ -74,7 +77,7 @@ public class ChatRoom extends Stage implements Observer {
         addFriend.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ClientMain.currentUser.addFriend(ServerMain.findUser(userList.getValue()));
+                //ClientMain.currentUser.addFriend(ServerMain.findUser(userList.getValue()));
             }
         });
 

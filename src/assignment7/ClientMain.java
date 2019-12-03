@@ -40,7 +40,6 @@ public class ClientMain extends Application
 		connectstatus.setText("Connecting...");
 		while(!(mysock.isConnected())) {continue;}
 		connectstatus.setText("Connected!");
-		writer.write(currentUser.username+"\n");
 	}
 
 	
@@ -84,8 +83,11 @@ public class ClientMain extends Application
 					connectstatus.setText("Searching...");
 					connect(ip);
 					currentUser = new Profile(username_Entry.getText(),mysock);
+					writer.println("USER" + currentUser.username);
+					writer.flush();
 					connect_Stage.close();
 					new ChatRoom(true);
+					//new ChatRoom(false);
 				}
 				catch(Exception excep) {connect_IPaddress.setText(excep.getMessage());
 				excep.printStackTrace();}
