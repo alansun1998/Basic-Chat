@@ -1,9 +1,5 @@
 So here's what my plan is:
-I'm going to add the Profile to users DIRECTLY IN ServerMain instead of outside it,
-since for some reason the users ArrayList isn't the same for each Client when added outside.
-To do this, I'm trying to automatically send over the username of the Client to the
-BufferedReader of the Server upon connecting, but I'm having trouble with this.
-Hopefully you can find a way to do this.
 
-In ServerMain, there is a commented code block in setUpNetworking().
-Maybe you could use this.
+Create new chat server instance to act as private chat
+	- For main server, we connect people as they enter
+	- For private chat, we connect people using checkboxes and stuff

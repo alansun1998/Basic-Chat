@@ -4,12 +4,10 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class ServerMain extends Observable {
-	private ArrayList<PrintWriter> clientOutputStreams;    //	idk what this does lololol
-	public static ArrayList<Profile> users = new ArrayList<Profile>();    //	list to store users
-	public static ArrayList<Profile> chat1 = new ArrayList<Profile>();
-	public static ArrayList<Profile> chat2 = new ArrayList<Profile>();
-	public static ArrayList<Profile> chat3 = new ArrayList<Profile>();
+public class ServerMain extends Observable
+{
+	private ArrayList<PrintWriter> clientOutputStreams;
+	public ArrayList<Profile> users = new ArrayList<Profile>();	//	list to store users
 
 
 	public static void main(String[] args) {    //	starts new networking thingy
@@ -35,13 +33,6 @@ public class ServerMain extends Observable {
 			//ClientHandler newClientHandler = new ClientHandler(clientSocket);
 			t.start();
 			System.out.println("got a connection");
-
-			//	addUser in ClientMain doesn't actually add the user to the users arraylist, so i made this
-//			int wait;
-//			while((wait = System.in.read()) != -1) {continue;}
-//			String newUserName = newClientHandler.reader.readLine();
-//			addUsers(new Profile(newUserName, clientSocket));
-//			System.out.println("got a connection: "+newUserName);
 		}
 	}
 
@@ -82,23 +73,29 @@ public class ServerMain extends Observable {
 	 * prints message to all clients when it receives one
 	 */
 	class ClientHandler implements Runnable {
-		private Socket sock;
-		private BufferedReader reader;
+		BufferedReader reader;
+		Socket clientSocket;
+		boolean userNameAccept;
 
 		public ClientHandler(Socket clientSocket) throws IOException {
-			sock = clientSocket;
-			reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+			this.clientSocket = clientSocket;
+			userNameAccept = false;
+			reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		}
 
 		public void run() {
 			String message;
 			try {
-				while ((message = reader.readLine()) != null) {
-					if(message.substring(0,4).equals("USER")){
-						users.add(new Profile(message.substring(3),sock));
-						System.out.println
+				while ((message = reader.readLine()) != null)
+				{
+					if(!userNameAccept)
+					{
+						addUsers(new Profile(message, clientSocket));
+						System.out.println("new user: "+message);
+						userNameAccept = true;
 					}
-					else{
+					else
+					{
 						System.out.println("read " + message);
 						setChanged();
 						notifyClients(message);

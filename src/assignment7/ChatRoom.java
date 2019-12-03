@@ -1,12 +1,13 @@
 package assignment7;
 
-import javafx.beans.value.ObservableValueBase;
 import javafx.event.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -22,15 +23,45 @@ public class ChatRoom extends Stage implements Observer {
     PrintWriter writer;
     BufferedReader reader;
     TextArea chat_Feed = new TextArea();
+    Profile currentUser;
     TextArea incoming;
     Boolean global;
 
-    public ChatRoom(Boolean isGlobal){
-        global = isGlobal;
-        GridPane chat_Pane = new GridPane();
+    public ChatRoom(Profile sudoWorkPlease)
+    {
+    	currentUser = sudoWorkPlease;
+    	GridPane chat_Pane = new GridPane();
         chat_Pane.setPadding(new Insets(5));
         GridPane menu = new GridPane();
         menu.setPadding(new Insets(5));
+
+        Stage actualChatStage = new Stage();
+    	
+    	//	Moved from ClientMain
+    	Pane connect_Pane1 = new HBox(5);
+		connect_Pane1.setPadding(new Insets(5));
+		Label username = new Label("Chat Username:");
+		TextField username_Entry = new TextField();
+		username_Entry.setPromptText("Enter chat Username: no spaces please!");
+		Button connect_Button = new Button("ENTER CHAT");
+		connect_Button.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent e)
+			{
+				try
+				{
+					String s = username_Entry.getText();
+					writer.println(s);
+					currentUser.username = s;
+					writer.flush();
+					actualChatStage.show();
+				}
+				catch(Exception exp) {username_Entry.setText("Error: try again.");}
+			}
+		});
+		connect_Pane1.getChildren().addAll(username,username_Entry,connect_Button);
+		
         try{
             connect(ClientMain.ip);
         }catch(Exception excep) {}
@@ -46,7 +77,7 @@ public class ChatRoom extends Stage implements Observer {
         send.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                writer.println(ClientMain.getCurrentUser().username + ": " + outgoing.getText());
+                writer.println(currentUser.username + ": " + outgoing.getText());
                 writer.flush();
                 outgoing.setText("");;
                 outgoing.requestFocus();
@@ -97,7 +128,8 @@ public class ChatRoom extends Stage implements Observer {
         else{
             this.setTitle(ClientMain.currentUser.username + "'s New Chat");
         }
-        this.setScene(new Scene(chat_Pane));
+        actualChatStage.setScene(new Scene(chat_Pane));
+        this.setScene(new Scene(connect_Pane1));
         this.show();
     }
 
