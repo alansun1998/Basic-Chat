@@ -7,16 +7,13 @@ import java.io.PrintWriter;
 import java.net.*;
 import java.util.*;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
-
 public class ServerMain extends Observable
 {
-	private ArrayList<PrintWriter> clientOutputStreams;
-	public static ArrayList<Profile> users = new ArrayList<Profile>();
+	private ArrayList<PrintWriter> clientOutputStreams;	//	idk what this does lololol
+	public ArrayList<Profile> users = new ArrayList<Profile>();	//	list to store users
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {	//	starts new networking thingy
 		try {
 			new ServerMain().setUpNetworking();
 		} catch (Exception e) {
@@ -28,35 +25,48 @@ public class ServerMain extends Observable
 		clientOutputStreams = new ArrayList<PrintWriter>();
 		@SuppressWarnings("resource")
 		ServerSocket serverSock = new ServerSocket(4000);
+		System.out.println("waiting for connection");
 		while (true) {
 			Socket clientSocket = serverSock.accept();
 			PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
 			clientOutputStreams.add(writer);
-
-			Thread t = new Thread(new ClientHandler(clientSocket));
+			ClientHandler newClientHandler = new ClientHandler(clientSocket);
+			Thread t = new Thread(newClientHandler);
 			t.start();
 			System.out.println("got a connection");
+			
+			//	addUser in ClientMain doesn't actually add the user to the users arraylist, so i made this
+//			int wait;
+//			while((wait = System.in.read()) != -1) {continue;}
+//			String newUserName = newClientHandler.reader.readLine();
+//			addUsers(new Profile(newUserName, clientSocket));
+//			System.out.println("got a connection: "+newUserName);
 		}
 
 	}
-	private void notifyClients(String message) {
-
-
+	/**
+	 * I have no idea what this does.
+	 * @param message
+	 */
+	private void notifyClients(String message)
+	{
 		for (PrintWriter writer : clientOutputStreams) {
 			writer.println(message);
 			writer.flush();
 		}
 	}
 
-	public static ArrayList<Profile> getUsers(){
+	//	methods for workign with user profiles
+	public ArrayList<Profile> getUsers(){
 	    return users;
     }
-
-    public static void addUsers(Profile curr){
+    public void addUsers(Profile curr){
 	    users.add(curr);
     }
-
-    public static Profile findUser(String name){
+    public void removeUsers(Profile rm){
+    	users.remove(rm);
+    }
+    public Profile findUser(String name){
 		for(Profile x: users){
 			if(x.username.equals(name)){
 				return x;
@@ -65,6 +75,9 @@ public class ServerMain extends Observable
 		return null;
 	}
 
+    /**
+     * prints message to all clients when it receives one
+     */
 	class ClientHandler implements Runnable {
 		private BufferedReader reader;
 
