@@ -1,29 +1,20 @@
 package assignment7;
 
 import javafx.beans.value.ObservableValueBase;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
+import javafx.event.*;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
+/**
+ * chat room window class
+ */
 public class ChatRoom extends Stage implements Observer {
 
     Socket mysock;
@@ -37,9 +28,6 @@ public class ChatRoom extends Stage implements Observer {
         global = isGlobal;
         GridPane chat_Pane = new GridPane();
         chat_Pane.setPadding(new Insets(5));
-        GridPane menu = new GridPane();
-        menu.setPadding(new Insets(5));
-        
         try{
             connect(ClientMain.ip);
         }catch(Exception excep) {}
@@ -48,8 +36,8 @@ public class ChatRoom extends Stage implements Observer {
         incoming.setEditable(false);
         ScrollPane hist = new ScrollPane(incoming);
 
-        TextArea outgoing = new TextArea();
-        outgoing.setWrapText(true);
+        TextField outgoing = new TextField();
+        outgoing.setPromptText("Enter your message here!");
 
         Button send = new Button("Send");
         send.setOnAction(new EventHandler<ActionEvent>() {
@@ -59,6 +47,7 @@ public class ChatRoom extends Stage implements Observer {
                 writer.flush();
                 outgoing.setText("");;
                 outgoing.requestFocus();
+
             }
         });
 

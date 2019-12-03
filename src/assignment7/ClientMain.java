@@ -15,13 +15,13 @@ import javafx.stage.Stage;
 
 public class ClientMain extends Application
 {
-	Socket mysock;
-	PrintWriter writer;
-	BufferedReader reader;
-	TextArea chat_Feed = new TextArea();
-	TextArea incoming;
-	static Profile currentUser;
-	static String ip;
+	Socket mysock;				//	our socket
+	PrintWriter writer;			//	our printwriter
+	BufferedReader reader;		//	our bufferedreader
+	TextArea incoming;			//	common textarea for incoming text
+	Label connectstatus = new Label();
+	static Profile currentUser;	//	our user profile
+	static String ip;			//	our ip address
 
 	
 	
@@ -37,15 +37,19 @@ public class ClientMain extends Application
 		reader = new BufferedReader(new InputStreamReader(mysock.getInputStream()));
 		Thread readerThread = new Thread(new IncomingReader());
 		readerThread.start();
+		connectstatus.setText("Connecting...");
+		while(!(mysock.isConnected())) {continue;}
+		connectstatus.setText("Connected!");
+		writer.write(currentUser.username+"\n");
 	}
 
 	
 	
 	/**
-	 * Initializing method
+	 * Initializing method, makes connect window
 	 */
 	@Override
-	public void start(Stage chat_Stage) throws Exception
+	public void start(Stage stage) throws Exception
 	{
 		Stage connect_Stage = new Stage();
 
@@ -57,6 +61,7 @@ public class ClientMain extends Application
 		GridPane connect_Grid = new GridPane();
 		connect_Grid.add(connect_Pane1,0,0);
 		connect_Grid.add(connect_Pane2,0,1);
+		connect_Grid.add(connectstatus,0,2);
 		
 		//	COMPONENTS OF connect_Pane
 		Label username = new Label("Chat Username:");
@@ -65,6 +70,7 @@ public class ClientMain extends Application
 		Label connect_Label = new Label("Connect to:");
 		TextField connect_IPaddress = new TextField();
 		connect_IPaddress.setPromptText("Enter IP address to connect to");
+		
 		Button connect_OK = new Button("CONNECT");
 		connect_OK.setOnAction(new EventHandler<ActionEvent>()
 		{
@@ -75,11 +81,9 @@ public class ClientMain extends Application
 				if(ip == "") {ip = "127.0.0.8";}
 				try
 				{
+					connectstatus.setText("Searching...");
 					connect(ip);
 					currentUser = new Profile(username_Entry.getText(),mysock);
-					Profile x = new Profile("testing",mysock);
-					currentUser.addFriend(x);
-					//currentUser.addFriend((new Profile("tesing2")));
 					connect_Stage.close();
 					new ChatRoom(true);
 				}
@@ -108,6 +112,9 @@ public class ClientMain extends Application
 		launch(args);
 	}
 
+	/**
+	 * runnable class for reading incoming text and printing it to client chat
+	 */
 	class IncomingReader implements Runnable {
 		public void run() {
 			String message;
