@@ -16,7 +16,7 @@ public class Profile {
     public Profile(String name, Socket psock) throws IOException {
         this.username = name;
         this.sock = psock;
-        ServerMain.addUsers(this);
+        ServerMain.addUsers(this);                     //////////////////////////////////////////server ref
     }
 
     public void addFriend(Profile fren){

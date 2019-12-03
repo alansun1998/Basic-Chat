@@ -11,6 +11,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.io.ObjectInputStream;
+
 public class newChatCreate extends Stage {
 
     Stage newChat = new Stage();
@@ -19,6 +21,7 @@ public class newChatCreate extends Stage {
         friend_Pane.setPadding(new Insets(5));
         Label addFriend = new Label("Add person to chat: ");
         ChoiceBox<String> friendList = new ChoiceBox<String>();
+
         try{
             for(Profile c: currentUser.friends){
                 friendList.getItems().add(c.username);
@@ -28,11 +31,12 @@ public class newChatCreate extends Stage {
         }
         if(currentUser.friends.size() == 0)
             friendList.getItems().add("You have no friends :(");
+
         Button add = new Button("Add");
         add.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                new ChatRoom();
+                new ChatRoom(false);
                 newChat.close();
             }
         });

@@ -31,8 +31,10 @@ public class ChatRoom extends Stage implements Observer {
     BufferedReader reader;
     TextArea chat_Feed = new TextArea();
     TextArea incoming;
+    Boolean global;
 
-    public ChatRoom(){
+    public ChatRoom(Boolean isGlobal){
+        global = isGlobal;
         GridPane chat_Pane = new GridPane();
         chat_Pane.setPadding(new Insets(5));
         GridPane menu = new GridPane();
@@ -64,7 +66,9 @@ public class ChatRoom extends Stage implements Observer {
         newChat.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                System.out.println("HERE1");
                 new newChatCreate(ClientMain.currentUser);
+                System.out.println("HERE2");
             }
         });
         ChoiceBox<String> userList = new ChoiceBox<String>();
@@ -78,14 +82,12 @@ public class ChatRoom extends Stage implements Observer {
         if(ServerMain.getUsers().size() == 1)
             userList.getItems().add("There are no users :(");
         Button addFriend = new Button("Add Friend");
-        newChat.setOnAction(new EventHandler<ActionEvent>() {
+        addFriend.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 ClientMain.currentUser.addFriend(ServerMain.findUser(userList.getValue()));
             }
         });
-
-
 
         chat_Pane.add(hist, 0, 0);
         chat_Pane.add(outgoing,0,1);
@@ -97,6 +99,12 @@ public class ChatRoom extends Stage implements Observer {
         chat_Pane.add(menu,1,1);
         hist.setFitToWidth(true);
         chat_Pane.setConstraints(hist,0,0,2,1);
+        if(global){
+            this.setTitle(ClientMain.currentUser.username + "'s Global Chat");
+        }
+        else{
+            this.setTitle(ClientMain.currentUser.username + "'s New Chat");
+        }
         this.setScene(new Scene(chat_Pane));
         this.show();
     }
@@ -114,7 +122,6 @@ public class ChatRoom extends Stage implements Observer {
     public void update(Observable o, Object arg) {
         writer.println(arg);
         writer.flush();
-
     }
 
     class IncomingReader implements Runnable {
@@ -122,7 +129,6 @@ public class ChatRoom extends Stage implements Observer {
             String message;
             try {
                 while ((message = reader.readLine()) != null) {
-
                     incoming.insertText(incoming.getLength(),message + "\n");
                 }
             } catch (IOException ex) {

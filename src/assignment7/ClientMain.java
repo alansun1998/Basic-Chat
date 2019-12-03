@@ -1,6 +1,7 @@
 package assignment7;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 
 import com.sun.security.ntlm.Server;
@@ -80,10 +81,10 @@ public class ClientMain extends Application
 					currentUser.addFriend(x);
 					//currentUser.addFriend((new Profile("tesing2")));
 					connect_Stage.close();
-					new ChatRoom();
-					//chat_Stage.show();
+					new ChatRoom(true);
 				}
-				catch(Exception excep) {connect_IPaddress.setText(excep.getMessage());}
+				catch(Exception excep) {connect_IPaddress.setText(excep.getMessage());
+				excep.printStackTrace();}
 			}
 		});
 		connect_Pane1.getChildren().addAll(username,username_Entry);
