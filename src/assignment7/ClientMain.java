@@ -108,10 +108,10 @@ public class ClientMain extends Application
 				try
 				{
 					currentUser = new Profile(username_Entry.getText(),mysock);
-					new ChatRoom(currentUser,"AllRM");
 					new ChatRoom(currentUser,"Room1");
 					new ChatRoom(currentUser,"Room2");
 					new ChatRoom(currentUser,"Room3");
+					new ChatRoom(currentUser,"AllRM");
 					user_Entry.close();
 				}
 				catch(Exception exp) {username_Entry.setText("Error: try again.");
