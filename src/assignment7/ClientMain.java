@@ -20,7 +20,7 @@ public class ClientMain extends Application
 	BufferedReader reader;		//	our bufferedreader
 	TextArea incoming;			//	common textarea for incoming text
 	Label connectstatus = new Label("...");
-//	static Profile currentUser;	//	our user profile
+	static Profile currentUser;	//	our user profile
 	static String ip;			//	our ip address
 
 	
@@ -35,8 +35,6 @@ public class ClientMain extends Application
 		mysock = new Socket(ip,4000);
 		writer = new PrintWriter(mysock.getOutputStream());
 		reader = new BufferedReader(new InputStreamReader(mysock.getInputStream()));
-		Thread readerThread = new Thread(new IncomingReader());
-		readerThread.start();
 		connectstatus.setText("Connecting...");
 		while(!(mysock.isConnected())) {continue;}
 		connectstatus.setText("Connected!");
@@ -51,6 +49,7 @@ public class ClientMain extends Application
 	public void start(Stage stage) throws Exception
 	{
 		Stage connect_Stage = new Stage();
+		Stage user_Entry = new Stage();
 
 		//	COMPONENTS OF STARTUP
 		
@@ -78,16 +77,44 @@ public class ClientMain extends Application
 				{
 					connectstatus.setText("Searching...");
 					connect(ip);
-					currentUser = new Profile(username_Entry.getText(),mysock);
 					connect_Stage.close();
-					new ChatRoom(new Profile("NO_NAME",mysock));
-					//new ChatRoom(false);
+					user_Entry.show();
+					//new ChatRoom(null);
 				}
 				catch(Exception excep) {connect_IPaddress.setText(excep.getMessage());
 				excep.printStackTrace();}
 			}
 		});
 		connect_Pane2.getChildren().addAll(connect_Label,connect_IPaddress,connect_OK);
+
+		//COMPONENTS OF user_Entry
+		Pane connect_Pane1 = new HBox(5);
+		connect_Pane1.setPadding(new Insets(5));
+		Label username = new Label("Chat Username:");
+		TextField username_Entry = new TextField();
+		username_Entry.setPromptText("Enter chat Username: no spaces please!");
+		Button connect_Button = new Button("ENTER CHAT");
+		connect_Button.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent e)
+			{
+				try
+				{
+					currentUser = new Profile(username_Entry.getText(),mysock);
+					Profile dummy = new Profile("Dummy",mysock);
+					//writer.println(currentUser.username);
+					//writer.flush();
+					new ChatRoom(currentUser);
+					user_Entry.close();
+				}
+				catch(Exception exp) {username_Entry.setText("Error: try again.");
+					exp.printStackTrace();
+				}
+			}
+		});
+		connect_Pane1.getChildren().addAll(username,username_Entry,connect_Button);
+		user_Entry.setScene(new Scene(connect_Pane1));
 
 		incoming = new TextArea();
 		incoming.setWrapText(true);

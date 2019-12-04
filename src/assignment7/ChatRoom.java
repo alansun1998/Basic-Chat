@@ -25,46 +25,23 @@ public class ChatRoom extends Stage implements Observer {
     TextArea chat_Feed = new TextArea();
     Profile currentUser;
     TextArea incoming;
-    Boolean global;
+    Stage userStage = new Stage();
 
     public ChatRoom(Profile sudoWorkPlease)
     {
     	currentUser = sudoWorkPlease;
+    	//System.out.println(ServerMain.o);
+    	//ServerMain.getObs().addObserver(this);
     	GridPane chat_Pane = new GridPane();
         chat_Pane.setPadding(new Insets(5));
         GridPane menu = new GridPane();
         menu.setPadding(new Insets(5));
-
         Stage actualChatStage = new Stage();
-    	
-    	//	Moved from ClientMain
-    	Pane connect_Pane1 = new HBox(5);
-		connect_Pane1.setPadding(new Insets(5));
-		Label username = new Label("Chat Username:");
-		TextField username_Entry = new TextField();
-		username_Entry.setPromptText("Enter chat Username: no spaces please!");
-		Button connect_Button = new Button("ENTER CHAT");
-		connect_Button.setOnAction(new EventHandler<ActionEvent>()
-		{
-			@Override
-			public void handle(ActionEvent e)
-			{
-				try
-				{
-					String s = username_Entry.getText();
-					writer.println(s);
-					currentUser.username = s;
-					writer.flush();
-					actualChatStage.show();
-				}
-				catch(Exception exp) {username_Entry.setText("Error: try again.");}
-			}
-		});
-		connect_Pane1.getChildren().addAll(username,username_Entry,connect_Button);
-		
+
         try{
             connect(ClientMain.ip);
         }catch(Exception excep) {}
+
         incoming = new TextArea();
         incoming.setWrapText(true);
         incoming.setEditable(false);
@@ -89,20 +66,20 @@ public class ChatRoom extends Stage implements Observer {
         newChat.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("HERE1");
                 new newChatCreate(ClientMain.currentUser);
-                System.out.println("HERE2");
             }
         });
         ChoiceBox<String> userList = new ChoiceBox<String>();
         try{
             for(Profile c: ServerMain.getUsers()){
-                userList.getItems().add(c.username);
+                //if(!c.equals(currentUser))
+                System.out.println(ServerMain.getUsers());
+                    userList.getItems().add(c.username);
             }
         }catch (NullPointerException e){
             userList.getItems().add("There are no users :(");
         }
-        if(ServerMain.getUsers().size() == 1)
+        if(ServerMain.getUsers().size() == 0)
             userList.getItems().add("There are no users :(");
         Button addFriend = new Button("Add Friend");
         addFriend.setOnAction(new EventHandler<ActionEvent>() {
@@ -122,15 +99,8 @@ public class ChatRoom extends Stage implements Observer {
         chat_Pane.add(menu,1,1);
         hist.setFitToWidth(true);
         chat_Pane.setConstraints(hist,0,0,2,1);
-        if(global){
-            this.setTitle(ClientMain.currentUser.username + "'s Global Chat");
-        }
-        else{
-            this.setTitle(ClientMain.currentUser.username + "'s New Chat");
-        }
         actualChatStage.setScene(new Scene(chat_Pane));
-        this.setScene(new Scene(connect_Pane1));
-        this.show();
+        actualChatStage.show();
     }
 
     public void connect(String ip) throws IOException
@@ -144,12 +114,14 @@ public class ChatRoom extends Stage implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+        System.out.println("OHAI");
         writer.println(arg);
         writer.flush();
     }
 
     class IncomingReader implements Runnable {
         public void run() {
+
             String message;
             try {
                 while ((message = reader.readLine()) != null) {

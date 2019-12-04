@@ -7,11 +7,13 @@ import java.util.*;
 public class ServerMain extends Observable
 {
 	private ArrayList<PrintWriter> clientOutputStreams;
-	public ArrayList<Profile> users = new ArrayList<Profile>();	//	list to store users
+	public static ArrayList<Profile> users = new ArrayList<Profile>();	//	list to store users
+	static Observable o;
 
 
 	public static void main(String[] args) {    //	starts new networking thingy
 		try {
+			o = new Observable();
 			new ServerMain().setUpNetworking();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -53,9 +55,12 @@ public class ServerMain extends Observable
 	public static ArrayList<Profile> getUsers(){
 		return users;
 	}
-	public void addUsers (Profile curr){
+	public static void addUsers (Profile curr){
 		users.add(curr);
-		System.out.println(users);
+		for(Profile x: users){
+			System.out.print(x.username + " ");
+		}
+		System.out.println();
 	}
 	public void removeUsers (Profile rm){
 		users.remove(rm);
@@ -67,6 +72,9 @@ public class ServerMain extends Observable
 			}
 		}
 		return null;
+	}
+	public static Observable getObs(){
+		return o;
 	}
 
 	/*
@@ -88,13 +96,13 @@ public class ServerMain extends Observable
 			try {
 				while ((message = reader.readLine()) != null)
 				{
-					if(!userNameAccept)
+					/*if(!userNameAccept)
 					{
-						addUsers(new Profile(message, clientSocket));
+						//addUsers(new Profile(message, clientSocket));
 						System.out.println("new user: "+message);
 						userNameAccept = true;
 					}
-					else
+					else*/
 					{
 						System.out.println("read " + message);
 						setChanged();
@@ -106,4 +114,5 @@ public class ServerMain extends Observable
 			}
 		}
 	}
+	
 }

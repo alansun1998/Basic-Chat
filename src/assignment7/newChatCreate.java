@@ -23,8 +23,9 @@ public class newChatCreate extends Stage {
 
         ArrayList<CheckBox> chooseChat = new ArrayList<CheckBox>();
         try{
-            for(Profile c: ServerMain.users){
-                chooseChat.add(new CheckBox(c.username));
+            for(Profile c: ServerMain.getUsers()){
+                if(!c.equals(currentUser))
+                    chooseChat.add(new CheckBox(c.username));
             }
         }catch (NullPointerException e){
         	CheckBox filler = new CheckBox("no one's here lol :P");
@@ -38,7 +39,7 @@ public class newChatCreate extends Stage {
         add.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                new ChatRoom(false);
+                new ChatRoom(null);
                 newChat.close();
             }
         });

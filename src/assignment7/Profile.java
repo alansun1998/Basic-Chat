@@ -15,7 +15,12 @@ public class Profile {
     public Profile(String name, Socket psock) throws IOException {
         this.username = name;
         this.sock = psock;
-//        ServerMain.addUsers(this);
-//        System.out.println("added user "+name+" (Total users: "+ServerMain.getUsers().size()+")");
+        ServerMain.addUsers(this);
+        System.out.println("added user "+name+" (Total users: "+ServerMain.getUsers().size()+")");
+    }
+
+    @Override
+    public String toString(){
+        return username;
     }
 }
