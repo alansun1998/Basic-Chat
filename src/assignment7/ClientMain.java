@@ -1,3 +1,16 @@
+/* CHAT ROOM <MyClass.java>
+ * EE422C Project 7 submission by
+ * Replace <...> with your actual data.
+ * Christopher Saenz
+ * cgs2258
+ * 16185
+ * Alan Sun
+ * as79972
+ * 16180
+ * Slip days used: 1
+ * Fall 2019
+ */
+
 package assignment7;
 
 import java.io.*;
@@ -23,9 +36,6 @@ public class ClientMain extends Application
 	static Profile currentUser;	//	our user profile
 	static String ip;			//	our ip address
 
-	
-	
-
 	/**
 	 * Method for initializing connection to server
 	 * @throws IOException
@@ -39,8 +49,6 @@ public class ClientMain extends Application
 		while(!(mysock.isConnected())) {continue;}
 		connectstatus.setText("Connected!");
 	}
-
-	
 	
 	/**
 	 * Initializing method, makes connect window
@@ -56,7 +64,6 @@ public class ClientMain extends Application
 		Pane connect_Pane2 = new HBox(5);
 		connect_Pane2.setPadding(new Insets(5));
 		GridPane connect_Grid = new GridPane();
-//		connect_Grid.add(connect_Pane1,0,0);
 		connect_Grid.add(connect_Pane2,0,1);
 		connect_Grid.add(connectstatus,0,2);
 		
@@ -79,7 +86,6 @@ public class ClientMain extends Application
 					connect(ip);
 					connect_Stage.close();
 					user_Entry.show();
-					//new ChatRoom(null);
 				}
 				catch(Exception excep) {connect_IPaddress.setText(excep.getMessage());
 				excep.printStackTrace();}
@@ -102,12 +108,10 @@ public class ClientMain extends Application
 				try
 				{
 					currentUser = new Profile(username_Entry.getText(),mysock);
-					Profile dummy = new Profile("Dummy",mysock);
-					//writer.println(currentUser.username);
-					//writer.flush();
 					new ChatRoom(currentUser,"AllRM");
 					new ChatRoom(currentUser,"Room1");
 					new ChatRoom(currentUser,"Room2");
+					new ChatRoom(currentUser,"Room3");
 					user_Entry.close();
 				}
 				catch(Exception exp) {username_Entry.setText("Error: try again.");
@@ -126,11 +130,6 @@ public class ClientMain extends Application
 		connect_Stage.setScene(new Scene(connect_Grid));
 		connect_Stage.show();
 	}
-
-//	public static Profile getCurrentUser(){
-//		return currentUser;
-//	}
-
 	public static void main(String[] args)
 	{
 		launch(args);

@@ -1,3 +1,16 @@
+/* CHAT ROOM <MyClass.java>
+ * EE422C Project 7 submission by
+ * Replace <...> with your actual data.
+ * Christopher Saenz
+ * cgs2258
+ * 16185
+ * Alan Sun
+ * as79972
+ * 16180
+ * Slip days used: 1
+ * Fall 2019
+ */
+
 package assignment7;
 
 import java.io.*;
@@ -11,7 +24,7 @@ public class ServerMain extends Observable
 	Rooms all = new Rooms();
 	Rooms room1 = new Rooms();
 	Rooms room2 = new Rooms();
-
+	Rooms room3 = new Rooms();
 
 	public static void main(String[] args) {    //	starts new networking thingy
 		try {
@@ -64,36 +77,22 @@ public class ServerMain extends Observable
 		}
 		System.out.println();
 	}
-	public void removeUsers (Profile rm){
-		users.remove(rm);
-	}
-	public Profile findUser (String name){
-		for (Profile x : users) {
-			if (x.username.equals(name)) {
-				return x;
-			}
-		}
-		return null;
-	}
 
 	/*
 	 * prints message to all clients when it receives one
 	 */
 	class ClientHandler implements Runnable {
 		BufferedReader reader;
-		ObjectInputStream reader2;
 		Socket clientSocket;
 
 		public ClientHandler(Socket clientSocket) throws IOException {
 			this.clientSocket = clientSocket;
 			reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			//reader2 = new ObjectInputStream(clientSocket.getInputStream());
 		}
 
 		public void run() {
 			String message;
 			try {
-				//while ((message = ((Message) reader2.readObject()).msg) != null)
 				while ((message = reader.readLine()) != null)
 				{
 					String[] breakdown = message.split("#");
@@ -105,8 +104,11 @@ public class ServerMain extends Observable
 							room1.add(clientSocket);
 
 						}
-						else{
+						else if(breakdown[1].equals("Room2")){
 							room2.add(clientSocket);
+						}
+						else{
+							room3.add(clientSocket);
 						}
 					}
 					else if(breakdown[0].equals("AllRM")){
@@ -124,6 +126,11 @@ public class ServerMain extends Observable
 						setChanged();
 						room2.notifyClients(breakdown[1]);
 					}
+					else if(breakdown[0].equals("Room3")){
+						System.out.println("read " + breakdown[1]);
+						setChanged();
+						room3.notifyClients(breakdown[1]);
+					}
 					else{
 						System.out.println("read " + message);
 						setChanged();
@@ -136,10 +143,8 @@ public class ServerMain extends Observable
 		}
 	}
 	class Rooms extends Observable{
-		ArrayList<Profile> roomUsers;
 		ArrayList<PrintWriter> roomOut;
 		public Rooms(){
-			this.roomUsers = new ArrayList();
 			this.roomOut = new ArrayList();
 		}
 		public void add(Socket x) throws IOException {

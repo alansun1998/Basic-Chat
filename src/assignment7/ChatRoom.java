@@ -1,3 +1,16 @@
+/* CHAT ROOM <MyClass.java>
+ * EE422C Project 7 submission by
+ * Replace <...> with your actual data.
+ * Christopher Saenz
+ * cgs2258
+ * 16185
+ * Alan Sun
+ * as79972
+ * 16180
+ * Slip days used: 1
+ * Fall 2019
+ */
+
 package assignment7;
 
 import javafx.event.*;
@@ -7,8 +20,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -23,20 +34,15 @@ public class ChatRoom extends Stage implements Observer {
     Socket mysock;
     PrintWriter writer;
     BufferedReader reader;
-    ObjectOutputStream writer2;
-    ObjectInputStream reader2;
-    TextArea chat_Feed = new TextArea();
     Profile currentUser;
     TextArea incoming;
-    Stage userStage = new Stage();
+
     String roomName;
 
     public ChatRoom(Profile sudoWorkPlease, String title)
     {
     	currentUser = sudoWorkPlease;
     	roomName = title;
-    	//System.out.println(ServerMain.o);
-    	//ServerMain.getObs().addObserver(this);
     	GridPane chat_Pane = new GridPane();
         chat_Pane.setPadding(new Insets(5));
         GridPane menu = new GridPane();
@@ -59,7 +65,6 @@ public class ChatRoom extends Stage implements Observer {
         send.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Message msg = new Message(currentUser.username + ": " + outgoing.getText());
                 writer.println(roomName + "#" + currentUser.username + ": " + outgoing.getText());
                 writer.flush();
                 //writer2.writeObject(msg);
@@ -74,7 +79,6 @@ public class ChatRoom extends Stage implements Observer {
         join.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //new newChatCreate(ClientMain.currentUser);
                 for(Node x: chat_Pane.getChildren()){
                     x.setDisable(false);
                 }
@@ -82,10 +86,10 @@ public class ChatRoom extends Stage implements Observer {
                 writer.flush();
             }
         });
-        ChoiceBox<String> userList = new ChoiceBox<String>();
+ /*       ChoiceBox<String> userList = new ChoiceBox<String>();
         try{
             for(Profile c: ServerMain.getUsers()){
-                //if(!c.equals(currentUser))
+                if(!c.equals(currentUser))
                 System.out.println(ServerMain.getUsers());
                     userList.getItems().add(c.username);
             }
@@ -98,22 +102,22 @@ public class ChatRoom extends Stage implements Observer {
         addFriend.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //ClientMain.currentUser.addFriend(ServerMain.findUser(userList.getValue()));
             }
-        });
+        });*/
 
         chat_Pane.add(hist, 0, 0);
         chat_Pane.add(outgoing,0,1);
-        menu.add(send,0,1);
-        menu.add(addFriend,1,0);
-        menu.add(userList,0,0);
+        menu.add(send,0,0);
+        //menu.add(addFriend,1,0);
+        //menu.add(userList,0,0);
         menu.setAlignment(Pos.CENTER);
         chat_Pane.add(menu,1,1);
         hist.setFitToWidth(true);
         chat_Pane.setConstraints(hist,0,0,2,1);
-        actualChatStage.setTitle(roomName);
+        actualChatStage.setTitle(currentUser.username + "'s All Chat");
         if(!roomName.equals("AllRM")){
-            menu.add(join,0,2);
+            actualChatStage.setTitle(currentUser.username + "'s " + roomName);
+            menu.add(join,1,0);
             for(Node x:chat_Pane.getChildren()){
                 x.setDisable(true);
             }
@@ -128,21 +132,17 @@ public class ChatRoom extends Stage implements Observer {
     {
         mysock = new Socket(ip,4000);
         writer = new PrintWriter(mysock.getOutputStream());
-        //writer2 = new ObjectOutputStream(mysock.getOutputStream());
-        //writer2.flush();
         reader = new BufferedReader(new InputStreamReader(mysock.getInputStream()));
         if(roomName.equals("AllRM")){
             writer.println("ADD#" + roomName);
             writer.flush();
         }
-        //reader2 = new ObjectInputStream(mysock.getInputStream());
         Thread readerThread = new Thread(new ChatRoom.IncomingReader());
         readerThread.start();
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        System.out.println("OHAI");
         writer.println(arg);
         writer.flush();
     }
@@ -151,7 +151,6 @@ public class ChatRoom extends Stage implements Observer {
         public void run() {
             String message;
             try {
-                //while ((message = ((Message) reader2.readObject()).msg) != null) {
                 while ((message = reader.readLine()) != null) {
                     incoming.insertText(incoming.getLength(),message + "\n");
                 }
