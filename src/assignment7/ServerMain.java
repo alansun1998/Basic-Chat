@@ -15,7 +15,6 @@ public class ServerMain extends Observable
 
 	public static void main(String[] args) {    //	starts new networking thingy
 		try {
-			o = new Observable();
 			new ServerMain().setUpNetworking();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -24,6 +23,7 @@ public class ServerMain extends Observable
 
 	private void setUpNetworking() throws Exception {
 		clientOutputStreams = new ArrayList<PrintWriter>();
+
 		@SuppressWarnings("resource")
 		ServerSocket serverSock = new ServerSocket(4000);
 		InetAddress local = InetAddress.getLocalHost();
@@ -75,45 +75,54 @@ public class ServerMain extends Observable
 		}
 		return null;
 	}
-	public static Observable getObs(){
-		return o;
-	}
 
 	/*
 	 * prints message to all clients when it receives one
 	 */
 	class ClientHandler implements Runnable {
 		BufferedReader reader;
+		ObjectInputStream reader2;
 		Socket clientSocket;
-		boolean userNameAccept;
 
 		public ClientHandler(Socket clientSocket) throws IOException {
 			this.clientSocket = clientSocket;
-			userNameAccept = false;
 			reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			//reader2 = new ObjectInputStream(clientSocket.getInputStream());
 		}
 
 		public void run() {
 			String message;
 			try {
+				//while ((message = ((Message) reader2.readObject()).msg) != null)
 				while ((message = reader.readLine()) != null)
 				{
 					String[] breakdown = message.split("#");
 					if(breakdown[0].equals("ADD")){
-						if(breakdown[1].equals("1")){
-							room1.addObserver();
+						if(breakdown[1].equals("AllRM")){
+							all.add(clientSocket);
+						}
+						else if(breakdown[1].equals("Room1")){
+							room1.add(clientSocket);
+
 						}
 						else{
-							room2.addObserver();
+							room2.add(clientSocket);
 						}
 					}
-					if(breakdown[0].equals("MSG")){
-						if(breakdown[1].equals("1")){
-							room1.notifyClients(breakdown[2]);
-						}
-						else{
-							room2.notifyClients(breakdown[2]);
-						}
+					else if(breakdown[0].equals("AllRM")){
+						System.out.println("read " + breakdown[1]);
+						setChanged();
+						all.notifyClients(breakdown[1]);
+					}
+					else if(breakdown[0].equals("Room1")){
+						System.out.println("read " + breakdown[1]);
+						setChanged();
+						room1.notifyClients(breakdown[1]);
+					}
+					else if(breakdown[0].equals("Room2")){
+						System.out.println("read " + breakdown[1]);
+						setChanged();
+						room2.notifyClients(breakdown[1]);
 					}
 					else{
 						System.out.println("read " + message);
@@ -130,16 +139,15 @@ public class ServerMain extends Observable
 		ArrayList<Profile> roomUsers;
 		ArrayList<PrintWriter> roomOut;
 		public Rooms(){
-			roomUsers = new ArrayList();
-			roomOut = new ArrayList();
+			this.roomUsers = new ArrayList();
+			this.roomOut = new ArrayList();
 		}
-		public void add(Profile x) throws IOException {
-			roomUsers.add(x);
-			roomOut.add(new PrintWriter(x.sock.getOutputStream()));
+		public void add(Socket x) throws IOException {
+			this.roomOut.add(new PrintWriter(x.getOutputStream()));
 		}
 		private void notifyClients (String message)
 		{
-			for (PrintWriter writer : roomOut) {
+			for (PrintWriter writer : this.roomOut) {
 				writer.println(message);
 				writer.flush();
 			}
