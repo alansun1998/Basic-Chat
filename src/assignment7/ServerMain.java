@@ -8,7 +8,9 @@ public class ServerMain extends Observable
 {
 	private ArrayList<PrintWriter> clientOutputStreams;
 	public static ArrayList<Profile> users = new ArrayList<Profile>();	//	list to store users
-	static Observable o;
+	Rooms all = new Rooms();
+	Rooms room1 = new Rooms();
+	Rooms room2 = new Rooms();
 
 
 	public static void main(String[] args) {    //	starts new networking thingy
@@ -96,14 +98,24 @@ public class ServerMain extends Observable
 			try {
 				while ((message = reader.readLine()) != null)
 				{
-					/*if(!userNameAccept)
-					{
-						//addUsers(new Profile(message, clientSocket));
-						System.out.println("new user: "+message);
-						userNameAccept = true;
+					String[] breakdown = message.split("#");
+					if(breakdown[0].equals("ADD")){
+						if(breakdown[1].equals("1")){
+							room1.addObserver();
+						}
+						else{
+							room2.addObserver();
+						}
 					}
-					else*/
-					{
+					if(breakdown[0].equals("MSG")){
+						if(breakdown[1].equals("1")){
+							room1.notifyClients(breakdown[2]);
+						}
+						else{
+							room2.notifyClients(breakdown[2]);
+						}
+					}
+					else{
 						System.out.println("read " + message);
 						setChanged();
 						notifyClients(message);
@@ -114,5 +126,27 @@ public class ServerMain extends Observable
 			}
 		}
 	}
-	
+	class Rooms extends Observable{
+		ArrayList<Profile> roomUsers;
+		ArrayList<PrintWriter> roomOut;
+		public Rooms(){
+			roomUsers = new ArrayList();
+			roomOut = new ArrayList();
+		}
+		public void add(Profile x) throws IOException {
+			roomUsers.add(x);
+			roomOut.add(new PrintWriter(x.sock.getOutputStream()));
+		}
+		private void notifyClients (String message)
+		{
+			for (PrintWriter writer : roomOut) {
+				writer.println(message);
+				writer.flush();
+			}
+		}
+
+
+
+
+	}
 }
