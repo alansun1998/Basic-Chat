@@ -39,7 +39,7 @@ public class newChatCreate extends Stage {
         add.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                new ChatRoom(null);
+                //new ChatRoom(null);
                 newChat.close();
             }
         });

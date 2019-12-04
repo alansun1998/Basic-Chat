@@ -105,7 +105,9 @@ public class ClientMain extends Application
 					Profile dummy = new Profile("Dummy",mysock);
 					//writer.println(currentUser.username);
 					//writer.flush();
-					new ChatRoom(currentUser);
+					new ChatRoom(currentUser,"AllRM");
+					new ChatRoom(currentUser,"Room1");
+					new ChatRoom(currentUser,"Room2");
 					user_Entry.close();
 				}
 				catch(Exception exp) {username_Entry.setText("Error: try again.");

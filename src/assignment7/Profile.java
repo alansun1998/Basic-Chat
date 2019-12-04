@@ -3,8 +3,10 @@ package assignment7;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
-public class Profile {
+public class Profile implements Observer {
     String username;
     Socket sock;
 
@@ -22,5 +24,10 @@ public class Profile {
     @Override
     public String toString(){
         return username;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+
     }
 }
